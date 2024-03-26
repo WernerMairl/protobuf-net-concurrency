@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using PerfDemo.OsmFormat;
@@ -14,8 +12,6 @@ namespace PerfDemo
     /// </summary>
     public static class Program
     {
-
-
         public static async Task MeasureAsync(MeasurementInputs inputs, CancellationToken cancellationToken)
         {
             Debug.Assert(inputs.Concurrency > 0);
@@ -30,6 +26,9 @@ namespace PerfDemo
                     Debug.Assert(inputs.InputData.Length > 1000);
                     for (int l = 0; l < serializationsPerThread; l++)
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        // FEATURE UNDER TEST => Deserialize!!
                         object value = new PrimitiveBlock();
                         PrimitiveBlock pb = (PrimitiveBlock)inputs.ProtoBufTypeModel.Deserialize(inputs.InputData, value, typeof(PrimitiveBlock));
                         Debug.Assert(pb != null);
@@ -37,7 +36,7 @@ namespace PerfDemo
                     }
                     watch.Stop();
                     var rate = serializationsPerThread / watch.Elapsed.TotalSeconds;
-                    Console.WriteLine($"ThreadId {Environment.CurrentManagedThreadId} takes { watch.ElapsedMilliseconds} ms for {serializationsPerThread} deserialization calls ({Convert.ToInt32(rate)} per second)");
+                    Console.WriteLine($"ThreadId {Environment.CurrentManagedThreadId} takes {watch.ElapsedMilliseconds} ms for {serializationsPerThread} deserialization calls ({Convert.ToInt32(rate)} per second)");
                 },
                cancellationToken,
                TaskCreationOptions.None,  //investigate impact of LongRunning 
