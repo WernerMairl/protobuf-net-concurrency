@@ -47,10 +47,10 @@ namespace PerfDemo
 
         public static async Task<int> Main(string[] args)
         {
-            Console.WriteLine("PerfDemo v0.2.0");
+            Console.WriteLine("PerfDemo v1.0.0");
             Console.WriteLine();
-            Console.WriteLine($"Processors (available): {Environment.ProcessorCount}");
-            Console.WriteLine($"Press Ctrl+C or Ctrl+Break for cancel!");
+            Console.WriteLine($"  Processors (available): {Environment.ProcessorCount}");
+            Console.WriteLine($"  Press Ctrl+C or Ctrl+Break for cancel!");
             Console.WriteLine();
             Debug.Assert(args != null);
             var cts = new CancellationTokenSource();
@@ -65,12 +65,18 @@ namespace PerfDemo
             };
             try
             {
-                int[] concurrencies = new int[] { 1, 2, 4, 6, 8 };
-                int samples = 4000;
+                int[] concurrencies = new int[] { 1, 2, 4, 8 }; //execute the measurements with this numbers of tasks/threads
+                const int samples = 4000; //use OSM-SampleData with 4000 Nodes per PrimitiveBlock. Another Set with 500 is also available. OSM default is 8000!!
+                const int deserializationRequests = 1200; //how many deserializations should be done overall (splitted over n tasks/threads
+
                 TypeModel protoBufModel = ProtoBufTypeInfo.CreateOsmFormatModel(compile: true);
+
+                //Inputs are produced and calculated outside the measurements!
+                //Core input data are provided as ReadOnlyMemory<byte>, so they are thread-safe and without any impact from Disk/Storage during the measurement!
+
                 var inputs = new MeasurementInputs(protoBufModel)
                 {
-                    DeSerializationRequests = 1200,
+                    DeSerializationRequests = deserializationRequests,
                     InputData = DemoDataHelper.GenerateSerializedDemoData(samples),
                     ExpectedSamples = samples
                 };
@@ -79,17 +85,17 @@ namespace PerfDemo
                 {
                     inputs.Concurrency = concurrency;
                     long lockContentionBefore = Monitor.LockContentionCount;
+                    Console.ResetColor();
+                    Console.WriteLine($"ConcurrentTasks={inputs.Concurrency}");
                     Console.ForegroundColor = ConsoleColor.Green;
+
                     var watch = Stopwatch.StartNew();
                     await MeasureAsync(inputs, cts.Token);
                     watch.Stop();
+
                     long lockContentionAfter = Monitor.LockContentionCount;
                     Console.ResetColor();
-                    Console.WriteLine("Measurement:");
-                    Console.WriteLine("--------------------------");
-                    Console.WriteLine($"Tasks: {inputs.Concurrency}");
-                    Console.WriteLine($"Duration (milliseconds): {Convert.ToInt64(watch.Elapsed.TotalMilliseconds)}");
-                    Console.WriteLine($"Lock Contention: {lockContentionAfter - lockContentionBefore}");
+                    Console.WriteLine($"Duration={Convert.ToInt64(watch.Elapsed.TotalMilliseconds)} ms, Lock Contention: {lockContentionAfter - lockContentionBefore}");
                     Console.WriteLine();
                 }
                 return 0;
