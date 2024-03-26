@@ -14,7 +14,7 @@ namespace PerfDemo
             this.ProtoBufTypeModel = model;
         }
         public TypeModel ProtoBufTypeModel { get; set; }
-        public int DeSerializationRequests { get; set; } = 1000 * 1000;
+        public int DeSerializationRequests { get; set; } = 1000;
         public int Concurrency { get; set; } = 1;
         public ReadOnlyMemory<byte> InputData { get; set; } = ReadOnlyMemory<byte>.Empty;
 

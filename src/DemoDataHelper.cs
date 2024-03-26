@@ -6,7 +6,7 @@ namespace PerfDemo
     public static class DemoDataHelper
     {
         /// <summary>
-        /// 
+        /// GenerateSerializedDemoData
         /// </summary>
         /// <param name="samples">500 and 4000 implemented</param>
         /// <returns></returns>

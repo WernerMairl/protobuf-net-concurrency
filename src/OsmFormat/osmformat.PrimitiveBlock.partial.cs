@@ -1,10 +1,9 @@
-using System;
 using System.Linq;
 
 namespace PerfDemo.OsmFormat
 {
     /// <summary>
-    /// sss
+    /// PrimitiveBlock
     /// </summary>
     public partial class PrimitiveBlock
     {
