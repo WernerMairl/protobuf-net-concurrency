@@ -25,6 +25,7 @@ namespace PerfDemo
             {
                 tasks[i] = Task.Factory.StartNew(() =>
                 {
+                    var watch = Stopwatch.StartNew();
                     Debug.Assert(!inputs.InputData.IsEmpty);
                     Debug.Assert(inputs.InputData.Length > 1000);
                     for (int l = 0; l < serializationsPerThread; l++)
@@ -34,6 +35,9 @@ namespace PerfDemo
                         Debug.Assert(pb != null);
                         Debug.Assert(pb.GetNodesCount() == inputs.ExpectedSamples);
                     }
+                    watch.Stop();
+                    var rate = serializationsPerThread / watch.Elapsed.TotalSeconds;
+                    Console.WriteLine($"ThreadId {Environment.CurrentManagedThreadId} takes { watch.ElapsedMilliseconds} ms for {serializationsPerThread} deserialization calls ({Convert.ToInt32(rate)} per second)");
                 },
                cancellationToken,
                TaskCreationOptions.None,  //investigate impact of LongRunning 
@@ -72,10 +76,12 @@ namespace PerfDemo
                 {
                     inputs.Concurrency = concurrency;
                     long lockContentionBefore = Monitor.LockContentionCount;
+                    Console.ForegroundColor = ConsoleColor.Green;
                     var watch = Stopwatch.StartNew();
                     await MeasureAsync(inputs, cts.Token);
                     watch.Stop();
                     long lockContentionAfter = Monitor.LockContentionCount;
+                    Console.ResetColor();
                     Console.WriteLine("Measurement:");
                     Console.WriteLine("--------------------------");
                     Console.WriteLine($"Tasks: {inputs.Concurrency}");
