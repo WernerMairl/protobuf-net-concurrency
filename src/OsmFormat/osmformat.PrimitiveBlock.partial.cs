@@ -8,23 +8,7 @@ namespace PerfDemo.OsmFormat
     /// </summary>
     public partial class PrimitiveBlock
     {
-        /// <summary>
-        /// Calculates EntityType suummary over ALL the primitiveGroups inside the Block
-        /// </summary>
-        /// <returns>flags of types (maybe more then one)</returns>
-        public PrimitiveTypes CalculatePrimitiveForBlock()
-        {
-            PrimitiveBlock block = this;
-            PrimitiveTypes proposed = PrimitiveTypes.None;
-            if (block.primitivegroup?.Count > 0)
-            {
-                foreach (var group in block.primitivegroup)
-                {
-                    proposed = proposed | group.PrimitiveType;
-                }
-            }
-            return proposed;
-        }
+
 
         /// <summary>
         /// should not be part of ProtoBuf!
@@ -51,20 +35,6 @@ namespace PerfDemo.OsmFormat
             return this.primitivegroup.Where(g => g.HasRelations).Sum(g => g.GetRelationsCount());
         }
 
-        private PrimitiveTypes AggregateTypes()
-        {
-            if (this.primitivegroup == null)
-            {
-                return PrimitiveTypes.None;
-            }
-            var btp = this.primitivegroup.Select(pg => pg.PrimitiveType).Distinct().ToArray();
-            PrimitiveTypes start = PrimitiveTypes.None;
-            foreach (var b in btp)
-            {
-                start = start | b;
-            }
-            return start;
-        }
 
         //public bool IsMixedBlock()
         //{

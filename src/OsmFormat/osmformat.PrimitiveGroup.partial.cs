@@ -9,43 +9,6 @@ namespace PerfDemo.OsmFormat
     /// </summary>
     public partial class PrimitiveGroup
     {
-        private readonly object primitiveLock = new object();
-        private PrimitiveTypes? primitiveType = null;
-
-        /// <summary>
-        /// Osm spec means: a group can have only ONE primitivetype inside!
-        /// PrimitiveGroup MUST NEVER contain different types of objects
-        /// </summary>
-        [global::ProtoBuf.ProtoIgnore]
-        public PrimitiveTypes PrimitiveType
-        {
-            get
-            {
-                if (primitiveType.HasValue) return primitiveType.Value;
-                lock (this.primitiveLock)
-                {
-                    if (this.HasNodes)
-                    {
-                        primitiveType = PrimitiveTypes.Node;
-                        return primitiveType.Value;
-                    }
-
-                    if (this.HasRelations)
-                    {
-                        primitiveType = PrimitiveTypes.Relation;
-                        return primitiveType.Value;
-                    }
-
-                    if (this.HasWays)
-                    {
-                        primitiveType = PrimitiveTypes.Way;
-                        return primitiveType.Value;
-                    }
-                    primitiveType = PrimitiveTypes.None;
-                    return primitiveType.Value;
-                }
-            }
-        }
 
         [global::ProtoBuf.ProtoIgnore]
         public bool HasNodes

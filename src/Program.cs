@@ -23,18 +23,14 @@ namespace PerfDemo
             int serializationsPerThread = inputs.DeSerializationRequests / inputs.Concurrency;
             for (int i = 0; i < inputs.Concurrency; i++)
             {
-                var counterClosure = i;
                 tasks[i] = Task.Factory.StartNew(() =>
                 {
                     Debug.Assert(!inputs.InputData.IsEmpty);
                     Debug.Assert(inputs.InputData.Length > 1000);
-                    int z = counterClosure;
-                    var runtimeModel = OsmProtoBufMetadataFactory.DefaultInstance;
-                    TypeModel rtModel = runtimeModel.OsmFormatModel;
                     for (int l = 0; l < serializationsPerThread; l++)
                     {
                         object value = new PrimitiveBlock();
-                        PrimitiveBlock pb = (PrimitiveBlock)rtModel.Deserialize(inputs.InputData, value, typeof(PrimitiveBlock));
+                        PrimitiveBlock pb = (PrimitiveBlock)inputs.ProtoBufTypeModel.Deserialize(inputs.InputData, value, typeof(PrimitiveBlock));
                         Debug.Assert(pb != null);
                         Debug.Assert(pb.GetNodesCount() == inputs.ExpectedSamples);
                     }
@@ -49,6 +45,7 @@ namespace PerfDemo
         public static async Task<int> Main(string[] args)
         {
             Console.WriteLine("PerfDemo v0.2.0");
+            Console.WriteLine();
             Console.WriteLine($"Processors (available): {Environment.ProcessorCount}");
             Console.WriteLine();
             Debug.Assert(args != null);
@@ -61,11 +58,10 @@ namespace PerfDemo
             };
             try
             {
-
                 int[] concurrencies = new int[] { 1, 2, 4, 6, 8 };
-
                 int samples = 4000;
-                var inputs = new MeasurementInputs()
+                TypeModel protoBufModel = ProtoBufTypeInfo.CreateOsmFormatModel(compile: true);
+                var inputs = new MeasurementInputs(protoBufModel)
                 {
                     DeSerializationRequests = 1200,
                     InputData = DemoDataHelper.GenerateSerializedDemoData(samples),
@@ -80,7 +76,7 @@ namespace PerfDemo
                     await MeasureAsync(inputs, cts.Token);
                     watch.Stop();
                     long lockContentionAfter = Monitor.LockContentionCount;
-                    Console.WriteLine("Details:");
+                    Console.WriteLine("Measurement:");
                     Console.WriteLine("--------------------------");
                     Console.WriteLine($"Tasks: {inputs.Concurrency}");
                     Console.WriteLine($"Duration (milliseconds): {Convert.ToInt64(watch.Elapsed.TotalMilliseconds)}");
