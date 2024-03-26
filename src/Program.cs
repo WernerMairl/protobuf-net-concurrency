@@ -50,12 +50,16 @@ namespace PerfDemo
             Console.WriteLine("PerfDemo v0.2.0");
             Console.WriteLine();
             Console.WriteLine($"Processors (available): {Environment.ProcessorCount}");
+            Console.WriteLine($"Press Ctrl+C or Ctrl+Break for cancel!");
             Console.WriteLine();
             Debug.Assert(args != null);
             var cts = new CancellationTokenSource();
             Console.CancelKeyPress += (s, e) =>
             {
+                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Canceling...");
+                Console.ResetColor();
                 cts.Cancel();
                 e.Cancel = true;
             };

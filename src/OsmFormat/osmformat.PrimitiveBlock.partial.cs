@@ -9,7 +9,6 @@ namespace PerfDemo.OsmFormat
     public partial class PrimitiveBlock
     {
 
-
         /// <summary>
         /// should not be part of ProtoBuf!
         /// </summary>
@@ -34,30 +33,5 @@ namespace PerfDemo.OsmFormat
             if (this.primitivegroup == null) return 0;
             return this.primitivegroup.Where(g => g.HasRelations).Sum(g => g.GetRelationsCount());
         }
-
-
-        //public bool IsMixedBlock()
-        //{
-        //    if (this.primitivegroup == null)
-        //    {
-        //        return true; //Mixed because we don't know
-        //    }
-        //    var types = this.AggregateTypes();
-        //    return !types.IsSingleBitSelection();
-        //}
-
-        //public bool IsTypesBlock(PrimitiveTypes singleType)
-        //{
-        //    if (singleType == PrimitiveTypes.None)
-        //    {
-        //        throw new ArgumentException("None not allowed", nameof(singleType));
-        //    }
-        //    if (this.primitivegroup == null)
-        //    {
-        //        return false;
-        //    }
-        //    var types = this.AggregateTypes();
-        //    return (singleType & types) == singleType;
-        //}
     }
 }
