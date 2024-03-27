@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using PerfDemo.OsmFormat;
@@ -23,7 +24,7 @@ namespace PerfDemo
                 {
                     var watch = Stopwatch.StartNew();
                     Debug.Assert(!inputs.InputData.IsEmpty);
-                    Debug.Assert(inputs.InputData.Length > 1000);
+                    Debug.Assert(inputs.InputData.Length > 1);
                     for (int l = 0; l < serializationsPerThread; l++)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
@@ -45,11 +46,37 @@ namespace PerfDemo
             await Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        /// constant number over all tests, so we can see the impact of the "packaging"
+        /// Assumption: smaller Node packages inside the deserialized objects are better in term of deserialization perf, but worser in terms of file-storage-compression
+        /// </summary>
+        private const int ExpectedNodeCreations = 1000 * 1000;
+
+        /// <summary>
+        /// This is the parameter to play with!!
+        /// uses OSM-SampleData with x Nodes per PrimitiveBlock. 
+        /// Available sets: 10, 500, 1000, 4000, and 8000 
+        /// OSM default is 8000! 
+        /// </summary>
+        private const int SerializedSample = 8000;
+
+        /// <summary>
+        /// execute measurements for all this number of tasks/threads
+        /// </summary>
+        private static readonly int[] Concurrencies = new int[] { 1, 2, 3, 4, 8 };
+
+        /// <summary>
+        /// how many deserializations should be done overall (splitted over n tasks/threads
+        /// </summary>
+        private const int DeserializationRequests = (ExpectedNodeCreations / SerializedSample) * 4;
+
         public static async Task<int> Main(string[] args)
         {
-            Console.WriteLine("PerfDemo v1.1.0");
+            Console.WriteLine("PerfDemo v1.2.0");
             Console.WriteLine();
             Console.WriteLine($"  Processors (available): {Environment.ProcessorCount}");
+            Console.WriteLine($"  Osm-Nodes to deserialize: {ExpectedNodeCreations.ToString("#,###,##0", CultureInfo.InvariantCulture)}");
+            Console.WriteLine();
             Console.WriteLine($"  Press Ctrl+C or Ctrl+Break for cancel!");
             Console.WriteLine();
             Debug.Assert(args != null);
@@ -65,9 +92,6 @@ namespace PerfDemo
             };
             try
             {
-                int[] concurrencies = new int[] { 1, 2, 3, 4, 8 }; //execute the measurements with this numbers of tasks/threads
-                const int samples = 8000; //uses OSM-SampleData with x Nodes per PrimitiveBlock. Another Sets with 10, 500 and 4000 are available available. OSM default is 8000!
-                const int deserializationRequests = 600; //how many deserializations should be done overall (splitted over n tasks/threads
 
                 TypeModel protoBufModel = ProtoBufTypeInfo.CreateOsmFormatModel(compile: true);
 
@@ -76,12 +100,12 @@ namespace PerfDemo
 
                 var inputs = new MeasurementInputs(protoBufModel)
                 {
-                    DeSerializationRequests = deserializationRequests,
-                    InputData = DemoDataHelper.GenerateSerializedDemoData(samples),
-                    ExpectedSamples = samples
+                    DeSerializationRequests = DeserializationRequests,
+                    InputData = DemoDataHelper.GenerateSerializedDemoData(SerializedSample),
+                    ExpectedSamples = SerializedSample
                 };
 
-                foreach (var concurrency in concurrencies)
+                foreach (var concurrency in Concurrencies)
                 {
                     inputs.Concurrency = concurrency;
                     long lockContentionBefore = Monitor.LockContentionCount;
