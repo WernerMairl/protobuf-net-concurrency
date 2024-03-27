@@ -47,7 +47,7 @@ namespace PerfDemo
 
         public static async Task<int> Main(string[] args)
         {
-            Console.WriteLine("PerfDemo v1.0.0");
+            Console.WriteLine("PerfDemo v1.1.0");
             Console.WriteLine();
             Console.WriteLine($"  Processors (available): {Environment.ProcessorCount}");
             Console.WriteLine($"  Press Ctrl+C or Ctrl+Break for cancel!");
@@ -65,9 +65,9 @@ namespace PerfDemo
             };
             try
             {
-                int[] concurrencies = new int[] { 1, 2, 4, 8 }; //execute the measurements with this numbers of tasks/threads
-                const int samples = 4000; //use OSM-SampleData with 4000 Nodes per PrimitiveBlock. Another Set with 500 is also available. OSM default is 8000!!
-                const int deserializationRequests = 1200; //how many deserializations should be done overall (splitted over n tasks/threads
+                int[] concurrencies = new int[] { 1, 2, 3, 4, 8 }; //execute the measurements with this numbers of tasks/threads
+                const int samples = 8000; //uses OSM-SampleData with x Nodes per PrimitiveBlock. Another Sets with 10, 500 and 4000 are available available. OSM default is 8000!
+                const int deserializationRequests = 600; //how many deserializations should be done overall (splitted over n tasks/threads
 
                 TypeModel protoBufModel = ProtoBufTypeInfo.CreateOsmFormatModel(compile: true);
 
@@ -86,7 +86,7 @@ namespace PerfDemo
                     inputs.Concurrency = concurrency;
                     long lockContentionBefore = Monitor.LockContentionCount;
                     Console.ResetColor();
-                    Console.WriteLine($"ConcurrentTasks={inputs.Concurrency}");
+                    Console.WriteLine($"ConcurrentTasks={inputs.Concurrency}, Nodes={inputs.ExpectedSamples}");
                     Console.ForegroundColor = ConsoleColor.Green;
 
                     var watch = Stopwatch.StartNew();

@@ -1,3 +1,9 @@
+#nullable disable
+#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable IDE0028
+#pragma warning disable IDE0090
+#pragma warning disable IDE0034
+
 // Generated (and modified) from: osmformat.proto
 namespace PerfDemo.OsmFormat
 {

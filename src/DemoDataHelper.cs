@@ -8,7 +8,7 @@ namespace PerfDemo
         /// <summary>
         /// GenerateSerializedDemoData
         /// </summary>
-        /// <param name="samples">500 and 4000 implemented</param>
+        /// <param name="samples">10, 500 and 4000 implemented</param>
         /// <returns></returns>
         public static ReadOnlyMemory<byte> GenerateSerializedDemoData(int samples)
         {
