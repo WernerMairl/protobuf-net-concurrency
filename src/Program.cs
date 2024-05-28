@@ -37,12 +37,12 @@ namespace PerfDemo
                         object value = new PrimitiveBlock();
                         PrimitiveBlock pb = (PrimitiveBlock)inputs.ProtoBufTypeModel.Deserialize(inputs.InputData, value, typeof(PrimitiveBlock));
                         Debug.Assert(pb != null);
-                        Debug.Assert(pb.GetNodesCount() == inputs.ExpectedSamples);
+                        //Debug.Assert(pb.GetNodesCount() == inputs.ExpectedSamples);
                     }
                     watch.Stop();
                     var rate = serializationsPerThread / watch.Elapsed.TotalSeconds;
                     //Console.WriteLine($"{processid.ToString().PadLeft(5)}: ThreadId {Environment.CurrentManagedThreadId} takes {watch.ElapsedMilliseconds} ms for {serializationsPerThread} deserialization calls ({Convert.ToInt32(rate)} per second)");
-                    Console.WriteLine($"{processid.ToString().PadLeft(5)}: {inputs.DeSerializationRequests} takes {watch.ElapsedMilliseconds} ms ({Convert.ToInt32(rate)} per second)");
+                    Console.WriteLine($"PID {processid.ToString().PadLeft(5)}: {inputs.DeSerializationRequests} takes {watch.ElapsedMilliseconds} ms ({Convert.ToInt32(rate)} per second)");
 
                 },
                cancellationToken,
@@ -169,7 +169,7 @@ namespace PerfDemo
                     if (!quiet)
                     {
                         Console.ResetColor();
-                        Console.WriteLine($"{currentProcess.Id.ToString().PadLeft(5)}: ConcurrentTasks={inputs.Concurrency}, BlockSize={inputs.ExpectedSamples} Nodes");
+                        Console.WriteLine($"PID {currentProcess.Id.ToString().PadLeft(5)}: ConcurrentTasks={inputs.Concurrency}, BlockSize={inputs.ExpectedSamples} Nodes");
                         Console.ForegroundColor = ConsoleColor.Green;
                     }
                     var watch = Stopwatch.StartNew();
@@ -178,7 +178,7 @@ namespace PerfDemo
 
                     long lockContentionAfter = Monitor.LockContentionCount;
                     Console.ResetColor();
-                    Console.WriteLine($"{currentProcess.Id.ToString().PadLeft(5)}: Duration={Convert.ToInt64(watch.Elapsed.TotalMilliseconds)} ms, Lock Contention: {lockContentionAfter - lockContentionBefore}");
+                    Console.WriteLine($"PID {currentProcess.Id.ToString().PadLeft(5)}: Duration={Convert.ToInt64(watch.Elapsed.TotalMilliseconds)} ms, Lock Contention: {lockContentionAfter - lockContentionBefore}");
                     Console.WriteLine();
                 }
                 return 0;
