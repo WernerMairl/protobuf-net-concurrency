@@ -20,7 +20,7 @@ namespace PerfDemo
         {
             Debug.Assert(inputs.Concurrency > 0);
             Task[] tasks = new Task[inputs.Concurrency];
-            Debug.Assert(inputs.Concurrency == 1);
+            //Debug.Assert(inputs.Concurrency == 1);
             int serializationsPerThread = inputs.DeSerializationRequests / inputs.Concurrency;
             for (int i = 0; i < inputs.Concurrency; i++)
             {
@@ -29,7 +29,7 @@ namespace PerfDemo
                     var watch = Stopwatch.StartNew();
                     Debug.Assert(!inputs.InputData.IsEmpty);
                     Debug.Assert(inputs.InputData.Length > 1);
-                    for (int l = 0; l < serializationsPerThread; l++)
+                    for (int l1 = 0; l1 < serializationsPerThread; l1++)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
@@ -42,7 +42,7 @@ namespace PerfDemo
                     watch.Stop();
                     var rate = serializationsPerThread / watch.Elapsed.TotalSeconds;
                     //Console.WriteLine($"{processid.ToString().PadLeft(5)}: ThreadId {Environment.CurrentManagedThreadId} takes {watch.ElapsedMilliseconds} ms for {serializationsPerThread} deserialization calls ({Convert.ToInt32(rate)} per second)");
-                    Console.WriteLine($"PID {processid.ToString().PadLeft(5)}: {inputs.DeSerializationRequests} takes {watch.ElapsedMilliseconds} ms ({Convert.ToInt32(rate)} per second)");
+                    Console.WriteLine($"PID {processid.ToString().PadLeft(5)} TID {Environment.CurrentManagedThreadId.ToString().PadLeft(3)}: {inputs.DeSerializationRequests} calls takes {watch.ElapsedMilliseconds} ms ({Convert.ToInt32(rate)} deserializer calls per second)");
 
                 },
                cancellationToken,
@@ -64,12 +64,12 @@ namespace PerfDemo
         /// Available sets: 10, 500, 1000, 4000, and 8000 
         /// OSM default is 8000! 
         /// </summary>
-        private const int SerializedSample = 8000;
+        private const int SerializedSample = 8000*2;
 
         /// <summary>
         /// execute measurements for all this number of tasks/threads
         /// </summary>
-        private static readonly int[] Concurrencies = new int[] { 1 };// new int[] { 1, 2, 3, 4, 8 };
+        private static readonly int[] Concurrencies = new int[] { 2 };// new int[] { 1, 2, 3, 4, 8 };
 
         public static int SubProcesses { get; set; } = 1;
 
@@ -81,20 +81,20 @@ namespace PerfDemo
         {
             Debug.Assert(args != null);
             var currentProcess = Process.GetCurrentProcess();
-            bool noLogo = false;
-            bool quiet = false;
+            bool quiet = args.Where(a => string.Equals(a, "--quiet", StringComparison.InvariantCultureIgnoreCase)).Any();
             bool doWork = args.Where(a => string.Equals(a, "--NoProc", StringComparison.InvariantCultureIgnoreCase)).Any();
+            bool noLogo = args.Where(a => string.Equals(a, "--nologo", StringComparison.InvariantCultureIgnoreCase)).Any();
             Program.SubProcesses = 10;
-            if (doWork)
-            {
-                noLogo = true;
-                quiet = true;
-            }
+            //if (doWork)
+            //{
+            //    noLogo = true;
+            //    quiet = true;
+            //}
             Debug.Assert(SubProcesses > 0);
             if (!noLogo)
             {
                 Console.ResetColor();
-                Console.WriteLine("PerfDemo v2.0.0");
+                Console.WriteLine("PerfDemo v3.0.0");
                 Console.WriteLine();
             }
 
@@ -107,6 +107,8 @@ namespace PerfDemo
                 Console.WriteLine($"  Process: {currentProcess.Id} (Priority={currentProcess.BasePriority})");
 
                 Console.WriteLine($"  Osm-Nodes to deserialize: {ExpectedNodeCreations.ToString("#,###,##0", CultureInfo.InvariantCulture)}");
+                Console.WriteLine($"  Expected deserializer calls: {DeserializationRequests.ToString("#,###,##0", CultureInfo.InvariantCulture)}");
+
                 Console.WriteLine();
                 Console.WriteLine($"  Press Ctrl+C or Ctrl+Break for cancel!");
                 Console.WriteLine();
@@ -135,7 +137,7 @@ namespace PerfDemo
                         exeName = exeName.Replace(".dll", ".exe");
                     }
                     Debug.Assert(System.IO.File.Exists(exeName));
-                    var pi = new ProcessStartInfo(exeName, "--NoProc");
+                    var pi = new ProcessStartInfo(exeName, "--NoProc --nologo --quiet");
                     var sw = Stopwatch.StartNew();
                     for (int i = 0; i < SubProcesses; i++)
                     {
@@ -175,10 +177,10 @@ namespace PerfDemo
                     var watch = Stopwatch.StartNew();
                     await MeasureAsync(inputs, currentProcess.Id, cts.Token);
                     watch.Stop();
-
                     long lockContentionAfter = Monitor.LockContentionCount;
+                    var rate = (DeserializationRequests / watch.Elapsed.TotalSeconds).ToString("##0.0", CultureInfo.InvariantCulture);
                     Console.ResetColor();
-                    Console.WriteLine($"PID {currentProcess.Id.ToString().PadLeft(5)}: Duration={Convert.ToInt64(watch.Elapsed.TotalMilliseconds)} ms, Lock Contention: {lockContentionAfter - lockContentionBefore}");
+                    Console.WriteLine($"PID {currentProcess.Id.ToString().PadLeft(5)}: Duration={Convert.ToInt64(watch.Elapsed.TotalMilliseconds)} ms, Lock Contention: {lockContentionAfter - lockContentionBefore}, Rate={rate} deserializations/sec");
                     Console.WriteLine();
                 }
                 return 0;
