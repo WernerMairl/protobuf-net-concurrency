@@ -3,7 +3,7 @@
 		<AssemblyName>protobuf-net</AssemblyName>
 		<Title>protobuf-net</Title>
 		<Description>Provides simple access to fast and efficient "Protocol Buffers" serialization from .NET applications</Description>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Configurations>Debug;Release</Configurations>
@@ -19,6 +19,11 @@
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
 		<DefineConstants>$(DefineConstants);PLAT_NO_EMITDLL;PLAT_SKIP_LOCALS_INIT</DefineConstants>
 	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<DefineConstants>$(DefineConstants);PLAT_NO_EMITDLL;PLAT_SKIP_LOCALS_INIT</DefineConstants>
+	</PropertyGroup>
+
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
 		<PackageReference Include="System.Reflection.Emit" />

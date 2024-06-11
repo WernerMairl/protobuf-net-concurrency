@@ -5,6 +5,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization;
+#pragma warning disable SYSLIB0050 // Type or member is obsolete
 
 namespace ProtoBuf
 {

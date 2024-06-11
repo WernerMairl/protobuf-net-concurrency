@@ -1,6 +1,7 @@
 ﻿using ProtoBuf.Internal;
 using System;
 using System.Runtime.InteropServices;
+#pragma warning disable CS1591 // Type or member is obsolete
 
 namespace ProtoBuf.Meta
 {

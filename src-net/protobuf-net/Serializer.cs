@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization;
+#pragma warning disable SYSLIB0050 // Type or member is obsolete
 
 namespace ProtoBuf
 {
@@ -169,15 +170,15 @@ namespace ProtoBuf
         public static void PrepareSerializer<[DynamicallyAccessedMembers(DynamicAccess.ContractType)] T>()
             => RuntimeTypeModel.Default[typeof(T)].CompileInPlace();
 
-        /// <summary>
-        /// Creates a new IFormatter that uses protocol-buffer [de]serialization.
-        /// </summary>
-        /// <typeparam name="T">The type of object to be [de]deserialized by the formatter.</typeparam>
-        /// <returns>A new IFormatter to be used during [de]serialization.</returns>
-        public static System.Runtime.Serialization.IFormatter CreateFormatter<[DynamicallyAccessedMembers(DynamicAccess.ContractType)] T>()
-        {
-            return RuntimeTypeModel.Default.CreateFormatter(typeof(T));
-        }
+        ///// <summary>
+        ///// Creates a new IFormatter that uses protocol-buffer [de]serialization.
+        ///// </summary>
+        ///// <typeparam name="T">The type of object to be [de]deserialized by the formatter.</typeparam>
+        ///// <returns>A new IFormatter to be used during [de]serialization.</returns>
+        //public static System.Runtime.Serialization.IFormatter CreateFormatter<[DynamicallyAccessedMembers(DynamicAccess.ContractType)] T>()
+        //{
+        //    return RuntimeTypeModel.Default.CreateFormatter(typeof(T));
+        //}
 
         /// <summary>
         /// Reads a sequence of consecutive length-prefixed items from a stream, using

@@ -1,6 +1,8 @@
 ﻿using System;
 
 using System.Runtime.Serialization;
+#pragma warning disable SYSLIB0051 // Type or member is obsolete
+
 namespace ProtoBuf
 {
     /// <summary>

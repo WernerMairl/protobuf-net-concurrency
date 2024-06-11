@@ -37,7 +37,8 @@ namespace ProtoBuf
         [MethodImpl(ProtoReader.HotPath)]
         public static object GetUninitializedObject(Type type)
         {
-            return System.Runtime.Serialization.FormatterServices.GetUninitializedObject(type);
+            throw new NotImplementedException("OOPS");
+            //return System.Runtime.Serialization.FormatterServices.GetUninitializedObject(type);
         }
 
         internal static readonly DateTime[] EpochOrigin = {

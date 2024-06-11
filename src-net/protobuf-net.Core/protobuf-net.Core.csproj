@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>ProtoBuf</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -15,19 +15,26 @@
     <PackageReference Include="System.Memory" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net7.0'">
+  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
     <!-- we use the AddRange span API from v7 -->
     <PackageReference Include="System.Collections.Immutable" />
   </ItemGroup>
 
+	
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
     <DefineConstants>$(DefineConstants);PLAT_ISREF;PLAT_SPAN_OVERLOADS;PLAT_CONCURRENT_CLEAR</DefineConstants>
   </PropertyGroup>
+	
   <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
     <DefineConstants>$(DefineConstants);PLAT_ISREF;PLAT_SPAN_OVERLOADS;PLAT_INTRINSICS;PLAT_AGGRESSIVE_OPTIMIZE;PLAT_CONCURRENT_CLEAR;PLAT_SKIP_LOCALS_INIT;PLAT_UTF8_STRING;PLAT_DYNAMIC_ACCESS_ATTR</DefineConstants>
   </PropertyGroup>
 
-<!--
+	<PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
+		<DefineConstants>$(DefineConstants);PLAT_ISREF;PLAT_SPAN_OVERLOADS;PLAT_INTRINSICS;PLAT_AGGRESSIVE_OPTIMIZE;PLAT_CONCURRENT_CLEAR;PLAT_SKIP_LOCALS_INIT;PLAT_UTF8_STRING;PLAT_DYNAMIC_ACCESS_ATTR</DefineConstants>
+	</PropertyGroup>
+
+
+	<!--
 PREFER_SPANS              : if the Stream resolves to something that can be processed another way, allow it
 PLAT_ISREF                : does System.Runtime.CompilerServices.RuntimeHelpers.IsReferenceOrContainsReferences-T() exist?
 PLAT_SPAN_OVERLOADS       : do common methods like string encode have APIs that take spans

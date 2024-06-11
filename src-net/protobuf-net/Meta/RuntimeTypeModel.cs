@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading;
 
 #pragma warning disable IDE0079 // sorry IDE, you're wrong
+#pragma warning disable SYSLIB0050 // Type or member is obsolete
 
 namespace ProtoBuf.Meta
 {

@@ -64,7 +64,7 @@ namespace PerfDemo
         /// Available sets: 10, 500, 1000, 4000, and 8000, 16000, 32000 
         /// OSM default is 8000! 
         /// </summary>
-        private const int SerializedSample = 1000;
+        private const int SerializedSample = 32000;
 
         /// <summary>
         /// execute measurements for all this number of tasks/threads
