@@ -61,15 +61,15 @@ namespace PerfDemo
         /// <summary>
         /// This is the parameter to play with!!
         /// uses OSM-SampleData with x Nodes per PrimitiveBlock. 
-        /// Available sets: 10, 500, 1000, 4000, and 8000 
+        /// Available sets: 10, 500, 1000, 4000, and 8000, 16000, 32000 
         /// OSM default is 8000! 
         /// </summary>
-        private const int SerializedSample = 8000*2;
+        private const int SerializedSample = 1000;
 
         /// <summary>
         /// execute measurements for all this number of tasks/threads
         /// </summary>
-        private static readonly int[] Concurrencies = new int[] { 2 };// new int[] { 1, 2, 3, 4, 8 };
+        private static readonly int[] Concurrencies = new int[] { 8 };// new int[] { 1, 2, 3, 4, 8 };
 
         public static int SubProcesses { get; set; } = 1;
 
