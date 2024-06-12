@@ -81,8 +81,11 @@ namespace PerfDemo
         {
             Debug.Assert(args != null);
             var currentProcess = Process.GetCurrentProcess();
-            bool quiet = args.Where(a => string.Equals(a, "--quiet", StringComparison.InvariantCultureIgnoreCase)).Any();
-            bool doWork = args.Where(a => string.Equals(a, "--NoProc", StringComparison.InvariantCultureIgnoreCase)).Any();
+            bool quiet = args.Where(a => string.Equals(a, "--quiet", StringComparison.InvariantCultureIgnoreCase)).Any();            
+            //bool doWorkInThreads = args.Where(a => string.Equals(a, "--NoProc", StringComparison.InvariantCultureIgnoreCase)).Any();
+            bool doWorkInThreads = true;
+            bool doWorkInProcesses = !doWorkInThreads;
+
             bool noLogo = args.Where(a => string.Equals(a, "--nologo", StringComparison.InvariantCultureIgnoreCase)).Any();
             Program.SubProcesses = 10;
             Debug.Assert(SubProcesses > 0);
@@ -97,7 +100,7 @@ namespace PerfDemo
             {
                 Console.ResetColor();
                 Console.WriteLine($"  Processors (available): {Environment.ProcessorCount}");
-                if (!doWork)
+                if (doWorkInProcesses)
                 {
                     Console.WriteLine($"  Processes (started): {SubProcesses}");
                 }
@@ -124,7 +127,7 @@ namespace PerfDemo
             try
             {
 
-                if (!doWork)
+                if (doWorkInProcesses)
                 {
                     //execute via multiple processes
                     Task<Results>[] tasks = new Task<Results>[SubProcesses];
