@@ -1,5 +1,4 @@
 using System;
-using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -64,12 +63,12 @@ namespace PerfDemo
         /// Available sets: 10, 500, 1000, 4000, and 8000, 16000, 32000 
         /// OSM default is 8000! 
         /// </summary>
-        private const int SerializedSample = 100;
+        private static int SerializedSample = 8000;
 
         /// <summary>
         /// execute measurements for all this number of tasks/threads
         /// </summary>
-        private static readonly int[] Concurrencies = new int[] { 2, 4, 8 };// new int[] { 1, 2, 3, 4, 8 };
+        private static int[] Concurrencies = new int[] { 1 };// new int[] { 1, 2, 3, 4, 8 };
 
         public static int SubProcesses { get; set; } = 1;
 
@@ -81,6 +80,18 @@ namespace PerfDemo
         {
             Debug.Assert(args != null);
             var currentProcess = Process.GetCurrentProcess();
+            var sItems = args.Where(a => a.StartsWith("--s", StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            if (sItems.Length == 1)
+            {
+                SerializedSample = sItems.Select(a => int.Parse(a.Replace("--s", string.Empty, StringComparison.InvariantCultureIgnoreCase))).Single();
+            }
+
+            var ccItems = args.Where(a => a.StartsWith("--cc", StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            if (ccItems.Length > 0)
+            {
+                Concurrencies = ccItems.Select(a => int.Parse(a.Replace("--cc", string.Empty,StringComparison.InvariantCultureIgnoreCase))).ToArray();
+            }
+
             bool quiet = args.Where(a => string.Equals(a, "--quiet", StringComparison.InvariantCultureIgnoreCase)).Any();            
             //bool doWorkInThreads = args.Where(a => string.Equals(a, "--NoProc", StringComparison.InvariantCultureIgnoreCase)).Any();
             bool doWorkInThreads = true;

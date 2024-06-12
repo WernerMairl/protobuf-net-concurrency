@@ -4,12 +4,14 @@
       "commandName": "WSL2",
       "distributionName": ""
     },
-    "DoWork": {
+
+    "Default": {
       "commandName": "Project",
-      "commandLineArgs": "--noproc"
+      "commandLineArgs": ""
     },
-    "StartProcesses": {
-      "commandName": "Project"
+    "Perf-Debug": {
+      "commandName": "Project",
+      "commandLineArgs": "--noproc --cc1 --cc2 --s1000"
     }
   }
 }
