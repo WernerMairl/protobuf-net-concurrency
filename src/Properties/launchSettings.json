@@ -11,7 +11,7 @@
     },
     "Perf-Debug": {
       "commandName": "Project",
-      "commandLineArgs": "--noproc --cc1 --s32000"
+      "commandLineArgs": "--noproc --cc1 --cc8 --s32000"
     }
   }
 }
