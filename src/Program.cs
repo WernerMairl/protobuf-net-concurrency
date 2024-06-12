@@ -19,8 +19,8 @@ namespace PerfDemo
         {
             Debug.Assert(inputs.Concurrency > 0);
             Task[] tasks = new Task[inputs.Concurrency];
-            //Debug.Assert(inputs.Concurrency == 1);
-            int serializationsPerThread = inputs.DeSerializationRequests / inputs.Concurrency;
+            Debug.Assert(inputs.Concurrency >= 0);
+            Debug.Assert(inputs.DeSerializationsPerThread > 0);
             for (int i = 0; i < inputs.Concurrency; i++)
             {
                 tasks[i] = Task.Factory.StartNew(() =>
@@ -28,7 +28,7 @@ namespace PerfDemo
                     var watch = Stopwatch.StartNew();
                     Debug.Assert(!inputs.InputData.IsEmpty);
                     Debug.Assert(inputs.InputData.Length > 1);
-                    for (int l1 = 0; l1 < serializationsPerThread; l1++)
+                    for (int l1 = 0; l1 < inputs.DeSerializationsPerThread; l1++)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
@@ -39,7 +39,7 @@ namespace PerfDemo
                         //Debug.Assert(pb.GetNodesCount() == inputs.ExpectedSamples);
                     }
                     watch.Stop();
-                    var rate = serializationsPerThread / watch.Elapsed.TotalSeconds;
+                    var rate = inputs.DeSerializationsPerThread / watch.Elapsed.TotalSeconds;
                     //Console.WriteLine($"{processid.ToString().PadLeft(5)}: ThreadId {Environment.CurrentManagedThreadId} takes {watch.ElapsedMilliseconds} ms for {serializationsPerThread} deserialization calls ({Convert.ToInt32(rate)} per second)");
                     Console.WriteLine($"PID {processid.ToString().PadLeft(5)} TID {Environment.CurrentManagedThreadId.ToString().PadLeft(3)}: {inputs.DeSerializationRequests} calls takes {watch.ElapsedMilliseconds} ms ({Convert.ToInt32(rate)} deserializer calls per second)");
 
@@ -51,11 +51,12 @@ namespace PerfDemo
             await Task.WhenAll(tasks);
         }
 
+
         /// <summary>
         /// constant number over all tests, so we can see the impact of the "packaging"
         /// Assumption: smaller Node packages inside the deserialized objects are better in term of deserialization perf, but worser in terms of file-storage-compression
         /// </summary>
-        private const int ExpectedNodeCreations = 1000 * 1000;
+        private static int ExpectedNodeCreations => (int.Max(SerializedSample, 1000000 * 5));
 
         /// <summary>
         /// This is the parameter to play with!!
@@ -75,7 +76,7 @@ namespace PerfDemo
         /// <summary>
         /// how many deserializations should be done overall (splitted over n tasks/threads
         /// </summary>
-        public static int DeserializationRequests => ((ExpectedNodeCreations / SerializedSample) * 8 * 10) / SubProcesses;
+        public static int DeserializationRequests => ((ExpectedNodeCreations * 8 * 10 / SerializedSample)) / SubProcesses;
         public static async Task<int> Main(string[] args)
         {
             Debug.Assert(args != null);
@@ -89,10 +90,10 @@ namespace PerfDemo
             var ccItems = args.Where(a => a.StartsWith("--cc", StringComparison.InvariantCultureIgnoreCase)).ToArray();
             if (ccItems.Length > 0)
             {
-                Concurrencies = ccItems.Select(a => int.Parse(a.Replace("--cc", string.Empty,StringComparison.InvariantCultureIgnoreCase))).ToArray();
+                Concurrencies = ccItems.Select(a => int.Parse(a.Replace("--cc", string.Empty, StringComparison.InvariantCultureIgnoreCase))).ToArray();
             }
 
-            bool quiet = args.Where(a => string.Equals(a, "--quiet", StringComparison.InvariantCultureIgnoreCase)).Any();            
+            bool quiet = args.Where(a => string.Equals(a, "--quiet", StringComparison.InvariantCultureIgnoreCase)).Any();
             //bool doWorkInThreads = args.Where(a => string.Equals(a, "--NoProc", StringComparison.InvariantCultureIgnoreCase)).Any();
             bool doWorkInThreads = true;
             bool doWorkInProcesses = !doWorkInThreads;
@@ -115,7 +116,7 @@ namespace PerfDemo
                 {
                     Console.WriteLine($"  Processes (started): {SubProcesses}");
                 }
-                Console.WriteLine($"  Process: {currentProcess.Id} (Priority={currentProcess.BasePriority})");
+                Console.WriteLine($"  Process: {currentProcess.Id} (BasePriority={currentProcess.BasePriority})");
 
                 Console.WriteLine($"  Osm-Nodes to deserialize: {ExpectedNodeCreations.ToString("#,###,##0", CultureInfo.InvariantCulture)}");
                 Console.WriteLine($"  Expected deserializer calls: {DeserializationRequests.ToString("#,###,##0", CultureInfo.InvariantCulture)}");
