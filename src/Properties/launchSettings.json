@@ -1,17 +1,12 @@
 {
   "profiles": {
-    "WSL": {
-      "commandName": "WSL2",
-      "distributionName": ""
-    },
-
     "Default": {
       "commandName": "Project",
       "commandLineArgs": ""
     },
     "Perf-Debug": {
       "commandName": "Project",
-      "commandLineArgs": "--noproc --cc1 --cc8 --s32000"
+      "commandLineArgs": "--noproc --cc8 --s32000"
     }
   }
 }

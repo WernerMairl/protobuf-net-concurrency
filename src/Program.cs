@@ -56,7 +56,7 @@ namespace PerfDemo
         /// constant number over all tests, so we can see the impact of the "packaging"
         /// Assumption: smaller Node packages inside the deserialized objects are better in term of deserialization perf, but worser in terms of file-storage-compression
         /// </summary>
-        private static int ExpectedNodeCreations => (int.Max(SerializedSample, 1000000 * 5));
+        private static int ExpectedNodeCreations => (int.Max(SerializedSample, 1_000_000 * 2));
 
         /// <summary>
         /// This is the parameter to play with!!
