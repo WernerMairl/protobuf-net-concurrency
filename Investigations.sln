@@ -13,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfDemo", "src\PerfDemo.csproj", "{791C1334-8743-43D7-841F-F9FE91A9B7F8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "protobuf-net.Core", "src-net\protobuf-net.Core\protobuf-net.Core.csproj", "{121B6928-3739-48CA-9B36-EA00CC6B81BC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "protobuf-net", "src-net\protobuf-net\protobuf-net.csproj", "{3FD14E20-E278-474A-AE31-4E6138A0F032}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +27,14 @@ Global
 		{791C1334-8743-43D7-841F-F9FE91A9B7F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{791C1334-8743-43D7-841F-F9FE91A9B7F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{791C1334-8743-43D7-841F-F9FE91A9B7F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{121B6928-3739-48CA-9B36-EA00CC6B81BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{121B6928-3739-48CA-9B36-EA00CC6B81BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{121B6928-3739-48CA-9B36-EA00CC6B81BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{121B6928-3739-48CA-9B36-EA00CC6B81BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FD14E20-E278-474A-AE31-4E6138A0F032}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FD14E20-E278-474A-AE31-4E6138A0F032}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FD14E20-E278-474A-AE31-4E6138A0F032}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FD14E20-E278-474A-AE31-4E6138A0F032}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

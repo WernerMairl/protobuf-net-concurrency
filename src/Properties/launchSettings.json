@@ -1,6 +1,14 @@
 {
   "profiles": {
-    "Default": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "DoWork": {
+      "commandName": "Project",
+      "commandLineArgs": "--noproc"
+    },
+    "StartProcesses": {
       "commandName": "Project"
     }
   }
