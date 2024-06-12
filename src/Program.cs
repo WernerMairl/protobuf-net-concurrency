@@ -64,7 +64,7 @@ namespace PerfDemo
         /// Available sets: 10, 500, 1000, 4000, and 8000, 16000, 32000 
         /// OSM default is 8000! 
         /// </summary>
-        private const int SerializedSample = 32000;
+        private const int SerializedSample = 500;
 
         /// <summary>
         /// execute measurements for all this number of tasks/threads
@@ -94,7 +94,7 @@ namespace PerfDemo
             if (!noLogo)
             {
                 Console.ResetColor();
-                Console.WriteLine("PerfDemo v3.0.0");
+                Console.WriteLine(Helper.ProductName + " " + Helper.GetProductVersionFromEntryAssembly());
                 Console.WriteLine();
             }
 
@@ -102,8 +102,10 @@ namespace PerfDemo
             {
                 Console.ResetColor();
                 Console.WriteLine($"  Processors (available): {Environment.ProcessorCount}");
-                Console.WriteLine($"  Processes (started): {SubProcesses}");
-
+                if (!doWork)
+                {
+                    Console.WriteLine($"  Processes (started): {SubProcesses}");
+                }
                 Console.WriteLine($"  Process: {currentProcess.Id} (Priority={currentProcess.BasePriority})");
 
                 Console.WriteLine($"  Osm-Nodes to deserialize: {ExpectedNodeCreations.ToString("#,###,##0", CultureInfo.InvariantCulture)}");

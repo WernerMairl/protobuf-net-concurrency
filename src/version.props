@@ -1,0 +1,21 @@
+<Project>
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<Company>mss-collect</Company>
+		<Authors>Werner Mairl</Authors>
+		<MajorVersion>3</MajorVersion>
+		<MinorVersion>1</MinorVersion>
+		<PatchVersion>0</PatchVersion>
+		<PreReleaseLabel>alpha-01</PreReleaseLabel>
+		<VersionPrefix>$(MajorVersion).$(MinorVersion).$(PatchVersion)</VersionPrefix>
+		<VersionSuffix Condition="'$(PreReleaseLabel)' == ''"></VersionSuffix>
+		<VersionSuffix Condition="'$(PreReleaseLabel)' != ''">-$(PreReleaseLabel)</VersionSuffix>
+		<InformationalVersion>$(VersionPrefix)$(VersionSuffix)</InformationalVersion>
+		<Version>$(VersionPrefix)$(VersionSuffix)</Version>
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<NoWarn>CS1591;CS1572;CS1573;NETSDK1004</NoWarn>
+	</PropertyGroup>
+</Project>
