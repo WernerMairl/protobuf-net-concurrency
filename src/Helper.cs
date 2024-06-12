@@ -9,6 +9,11 @@ namespace PerfDemo
 {
     public static class Helper
     {
+#if DEBUG
+        public static readonly string Configuration = "Debug";
+#else
+        public static readonly string Configuration = "Release";
+#endif
         public static readonly string ProductName = "PerfDemo";
         private static readonly char[] separator = new char[] { '.', '-' };
 

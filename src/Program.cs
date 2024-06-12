@@ -64,12 +64,12 @@ namespace PerfDemo
         /// Available sets: 10, 500, 1000, 4000, and 8000, 16000, 32000 
         /// OSM default is 8000! 
         /// </summary>
-        private const int SerializedSample = 500;
+        private const int SerializedSample = 32000;
 
         /// <summary>
         /// execute measurements for all this number of tasks/threads
         /// </summary>
-        private static readonly int[] Concurrencies = new int[] { 8 };// new int[] { 1, 2, 3, 4, 8 };
+        private static readonly int[] Concurrencies = new int[] { 2, 4, 8 };// new int[] { 1, 2, 3, 4, 8 };
 
         public static int SubProcesses { get; set; } = 1;
 
@@ -85,16 +85,11 @@ namespace PerfDemo
             bool doWork = args.Where(a => string.Equals(a, "--NoProc", StringComparison.InvariantCultureIgnoreCase)).Any();
             bool noLogo = args.Where(a => string.Equals(a, "--nologo", StringComparison.InvariantCultureIgnoreCase)).Any();
             Program.SubProcesses = 10;
-            //if (doWork)
-            //{
-            //    noLogo = true;
-            //    quiet = true;
-            //}
             Debug.Assert(SubProcesses > 0);
             if (!noLogo)
             {
                 Console.ResetColor();
-                Console.WriteLine(Helper.ProductName + " " + Helper.GetProductVersionFromEntryAssembly());
+                Console.WriteLine($"{Helper.ProductName} {Helper.GetProductVersionFromEntryAssembly()} ({Helper.Configuration})");
                 Console.WriteLine();
             }
 
