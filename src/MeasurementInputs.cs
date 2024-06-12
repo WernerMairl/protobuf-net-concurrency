@@ -14,8 +14,16 @@ namespace PerfDemo
             this.ProtoBufTypeModel = model;
         }
         public TypeModel ProtoBufTypeModel { get; set; }
+
+        /// <summary>
+        /// overall deserializations requested, they must be splitted over Threads (Concurrency)
+        /// 
+        /// </summary>
         public int DeSerializationRequests { get; set; } = 1000;
         public int Concurrency { get; set; } = 1;
+
+        public int DeSerializationsPerThread => DeSerializationRequests / Concurrency;
+
         public ReadOnlyMemory<byte> InputData { get; set; } = ReadOnlyMemory<byte>.Empty;
 
         /// <summary>

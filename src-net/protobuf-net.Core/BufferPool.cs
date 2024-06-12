@@ -14,12 +14,17 @@ namespace ProtoBuf
 
         internal static byte[] GetBuffer(int minSize)
         {
+
             byte[] cachedBuff = GetCachedBuffer(minSize);
             return cachedBuff ?? new byte[minSize];
         }
+#if NO_ARRAY_POOL
+        internal static byte[] GetCachedBuffer(int minSize) => null;
+
+#else
 
         internal static byte[] GetCachedBuffer(int minSize) => _pool.Rent(minSize);
-
+#endif
         // https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/gcallowverylargeobjects-element
         private const int MaxByteArraySize = int.MaxValue - 56;
 
@@ -58,7 +63,9 @@ namespace ProtoBuf
         {
             var tmp = buffer;
             buffer = null;
+#if !NO_ARRAY_POOL
             if (tmp is not null) _pool.Return(tmp);
+#endif
         }
     }
 }
