@@ -5,7 +5,7 @@
 		<Company>mss-collect</Company>
 		<Authors>Werner Mairl</Authors>
 		<MajorVersion>3</MajorVersion>
-		<MinorVersion>3</MinorVersion>
+		<MinorVersion>4</MinorVersion>
 		<PatchVersion>0</PatchVersion>
 		<PreReleaseLabel></PreReleaseLabel>
 		<VersionPrefix>$(MajorVersion).$(MinorVersion).$(PatchVersion)</VersionPrefix>

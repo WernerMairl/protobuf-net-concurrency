@@ -4,14 +4,30 @@
       "commandName": "WSL2",
       "distributionName": ""
     },
-
-    "Default": {
+    "Threads": {
       "commandName": "Project",
-      "commandLineArgs": ""
+      "commandLineArgs": "--c=2 --c=4 --c=8 --s=500 --n=800000"
+    },
+    "Thread": {
+      "commandName": "Project",
+      "commandLineArgs": "--c=3 --s=1000 --n=300000"
     },
     "Perf-Debug": {
       "commandName": "Project",
-      "commandLineArgs": "--noproc --cc1 --cc8 --s32000"
+      "commandLineArgs": "--c=1 --s=32000 --n=32000"
+    },
+    "Invalid": {
+      "commandName": "Project",
+      "commandLineArgs": "--c=1 --p=1"
+    },
+    "Multi-Processes-8": {
+      "commandName": "Project",
+      "commandLineArgs": "--p=10 --s=32000 --quiet=false --nologo=false --n=64000000"
+    },
+    "Threads-8": {
+      "commandName": "Project",
+      "commandLineArgs": "--c=8 --s=8000 --n=32000000"
     }
+
   }
 }
