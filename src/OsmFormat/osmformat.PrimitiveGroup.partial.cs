@@ -123,12 +123,13 @@ namespace PerfDemo.OsmFormat
             return result;
         }
 
-        private List<Node>? nodesResolved;
+        //private List<Node>? nodesResolved;
 
         public int GetNodesCount()
         {
-            nodesResolved = nodesResolved ?? this.GetNodes().ToList();
-            return nodesResolved.Count;
+            return this.dense.id.Count + this.nodes.Count;
+            //nodesResolved = nodesResolved ?? this.GetNodes().ToList();
+            //return nodesResolved.Count;
         }
 
         public int GetWaysCount()

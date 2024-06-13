@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using PerfDemo.OsmFormat;
@@ -17,8 +16,93 @@ namespace PerfDemo
     /// </summary>
     public static class Program
     {
+
+        /// <summary>
+        /// Baseline means: we measure the pure creation of all the nodes, but without using the protobf framework
+        /// goial: demonstarte that the pure .net bcl don't has this problem!
+        /// </summary>
+        /// <param name="inputs"></param>
+        /// <param name="processid"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task MeasureBaseLineAsync(MeasurementInputs inputs, int processid, CancellationToken cancellationToken)
+        {
+            Debug.Assert(inputs.ThreadConcurrency > 0);
+            Task[] tasks = new Task[inputs.ThreadConcurrency];
+            Debug.Assert(inputs.ThreadConcurrency >= 0);
+            Debug.Assert(inputs.DeSerializationsPerThread > 0);
+            for (int i = 0; i < inputs.ThreadConcurrency; i++)
+            {
+                tasks[i] = Task.Factory.StartNew(() =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    Debug.Assert(!inputs.InputData.IsEmpty);
+                    Debug.Assert(inputs.InputData.Length > 1);
+                    int counter = 0;
+                    for (int l1 = 0; l1 < inputs.DeSerializationsPerThread; l1++)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        // FEATURE UNDER TEST => Deserialize!!
+                        var target = new PrimitiveBlock();
+                        var source = inputs.Block!;
+                        foreach (var sourceGroup in source.primitivegroup)
+                        {
+                            var targetGroup = new PrimitiveGroup();
+                            target.primitivegroup.Add(targetGroup);
+                            foreach (var sourceNode in sourceGroup.nodes)
+                            {
+                                var n =new Node()
+                                {
+                                    id = sourceNode.id,
+                                    info = sourceNode.info,
+                                    lat = sourceNode.lat,
+                                    lon = sourceNode.lon,
+                                    //keys = sourceNode.keys,
+                                    //vals =  sourceNode.vals,
+                                };
+                                n.keys.AddRange(sourceNode.keys);
+                                n.vals.AddRange(sourceNode.vals);
+                                targetGroup.nodes.Add(n);
+                            }
+                            if (sourceGroup.dense != null)
+                            {
+                                targetGroup.dense = new DenseNodes();
+                                targetGroup.dense.keys_vals.AddRange(sourceGroup.dense.keys_vals);
+                                targetGroup.dense.id.AddRange(sourceGroup.dense.id);
+                                targetGroup.dense.lat.AddRange(sourceGroup.dense.lat);
+                                targetGroup.dense.lon.AddRange(sourceGroup.dense.lon);
+                                if (sourceGroup.dense.denseinfo != null)
+                                {
+                                    targetGroup.dense.denseinfo = new DenseInfo();
+                                    targetGroup.dense.denseinfo.uid.AddRange(sourceGroup.dense.denseinfo.uid);
+                                    targetGroup.dense.denseinfo.user_sid.AddRange(sourceGroup.dense.denseinfo.user_sid);
+                                    targetGroup.dense.denseinfo.timestamp.AddRange(sourceGroup.dense.denseinfo.timestamp);
+                                    targetGroup.dense.denseinfo.version.AddRange(sourceGroup.dense.denseinfo.version);
+                                    targetGroup.dense.denseinfo.changeset.AddRange(sourceGroup.dense.denseinfo.changeset);
+                                }
+                            }
+                        }
+                        //PrimitiveBlock pb = (PrimitiveBlock)inputs.ProtoBufTypeModel.Deserialize(inputs.InputData, value, typeof(PrimitiveBlock));
+                        //Debug.Assert(pb != null);
+                        Debug.Assert(target.GetNodesCount() == inputs.ExpectedSamples);
+                        counter += inputs.ExpectedSamples;
+                    }
+                    watch.Stop();
+                    Debug.Assert(counter == inputs.ExpectedNodeCreationsPerThread);
+                    var rate = inputs.DeSerializationsPerThread / watch.Elapsed.TotalSeconds;
+                    Console.WriteLine($"PID {processid.ToString().PadLeft(5)} TID {Environment.CurrentManagedThreadId.ToString().PadLeft(3)}: {inputs.DeSerializationsPerThread} calls takes {watch.ElapsedMilliseconds} ms ({rate.ToString("#,##0.0", CultureInfo.InvariantCulture)} copy calls per second)");
+                },
+               cancellationToken,
+               TaskCreationOptions.None,  //investigate impact of LongRunning 
+               TaskScheduler.Default);
+            }
+            await Task.WhenAll(tasks);
+        }
+
+
         public static async Task MeasureAsync(MeasurementInputs inputs, int processid, CancellationToken cancellationToken)
         {
+            throw new NotImplementedException("STOP");
             Debug.Assert(inputs.ThreadConcurrency > 0);
             Task[] tasks = new Task[inputs.ThreadConcurrency];
             Debug.Assert(inputs.ThreadConcurrency >= 0);
@@ -75,12 +159,6 @@ namespace PerfDemo
         private static int[] Concurrencies = new int[] { 1 };// new int[] { 1, 2, 3, 4, 8 };
 
         public static int SubProcesses { get; set; } = Environment.ProcessorCount;
-
-        ///// <summary>
-        ///// how many deserializations should be done overall (splitted over n tasks/threads
-        ///// </summary>
-        //public static int DeserializationRequests => ((ExpectedNodeCreations * 8 * 10 / SerializedSample)) / SubProcesses;
-
 
         private static bool GetBooleanArgument(string[] args, string key, bool defaultValue = false)
         {
@@ -257,6 +335,8 @@ namespace PerfDemo
                 //Inputs are produced and calculated outside the measurements!
                 //Core input data are provided as ReadOnlyMemory<byte>, so they are thread-safe and without any impact from Disk/Storage during the measurement!
 
+                bool baseLine = true;
+
                 var inputs = new MeasurementInputs(protoBufModel)
                 {
                     DeSerializationRequests = DeserializationRequestsOverAllThreads,
@@ -264,6 +344,15 @@ namespace PerfDemo
                     ExpectedSamples = SerializedSample,
                     ExpectedNodeCreations = ExpectedNodeCreations
                 };
+
+                if (baseLine)
+                {
+                    object value = new PrimitiveBlock();
+                    PrimitiveBlock pb = (PrimitiveBlock)inputs.ProtoBufTypeModel.Deserialize(inputs.InputData, value, typeof(PrimitiveBlock));
+                    Debug.Assert(pb != null);
+                    inputs.Block = pb;
+                }
+
 
                 foreach (var concurrency in Concurrencies)
                 {
@@ -277,8 +366,16 @@ namespace PerfDemo
                         Console.WriteLine($"PID {currentProcess.Id.ToString(CultureInfo.InvariantCulture).PadLeft(5)}: ConcurrentTasks={inputs.ThreadConcurrency}, BlockSize={inputs.ExpectedSamples.ToString("#,###,##0", CultureInfo.InvariantCulture)}, Overall={inputs.ExpectedNodeCreations.ToString("#,###,##0", CultureInfo.InvariantCulture)}");
                         Console.ResetColor();
                     }
+
                     var watch = Stopwatch.StartNew();
-                    await MeasureAsync(inputs, currentProcess.Id, cts.Token);
+                    if (baseLine)
+                    {
+                        await MeasureBaseLineAsync(inputs, currentProcess.Id, cts.Token);
+                    }
+                    else
+                    {
+                        await MeasureAsync(inputs, currentProcess.Id, cts.Token);
+                    }
                     watch.Stop();
                     long lockContentionAfter = Monitor.LockContentionCount;
                     var rate = (DeserializationRequestsOverAllThreads / watch.Elapsed.TotalSeconds).ToString("##0.0", CultureInfo.InvariantCulture);

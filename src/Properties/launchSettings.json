@@ -10,7 +10,7 @@
     },
     "Thread": {
       "commandName": "Project",
-      "commandLineArgs": "--c=3 --s=1000 --n=300000"
+      "commandLineArgs": "--c=2 --c=4 --c=8 --s=32000 --n=160000000"
     },
     "Perf-Debug": {
       "commandName": "Project",

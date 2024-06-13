@@ -1,4 +1,5 @@
 ﻿using System;
+using PerfDemo.OsmFormat;
 using ProtoBuf.Meta;
 
 namespace PerfDemo
@@ -37,11 +38,12 @@ namespace PerfDemo
 
         public ReadOnlyMemory<byte> InputData { get; set; } = ReadOnlyMemory<byte>.Empty;
 
+        public PrimitiveBlock? Block { get; set; } = null;
+
         /// <summary>
         /// DemoData with 500 and 4000 available
         /// </summary>
         public int ExpectedSamples { get; set; } = 4000;
-        //public int OverallNodes => ExpectedSamples * DeSerializationsPerThread;
 
         public int ExpectedNodeCreations = 1000000;
 
