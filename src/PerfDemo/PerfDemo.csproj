@@ -12,7 +12,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\src-net\protobuf-net\protobuf-net.csproj" />
+	  <ProjectReference Include="..\..\src-net\protobuf-net\protobuf-net.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
