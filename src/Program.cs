@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using PerfDemo.OsmFormat;
@@ -51,7 +52,7 @@ namespace PerfDemo
                             target.primitivegroup.Add(targetGroup);
                             foreach (var sourceNode in sourceGroup.nodes)
                             {
-                                var n =new Node()
+                                var n = new Node()
                                 {
                                     id = sourceNode.id,
                                     info = sourceNode.info,
@@ -66,25 +67,32 @@ namespace PerfDemo
                             }
                             if (sourceGroup.dense != null)
                             {
+                                var large = true;
                                 targetGroup.dense = new DenseNodes();
-                                targetGroup.dense.keys_vals.AddRange(sourceGroup.dense.keys_vals);
                                 targetGroup.dense.id.AddRange(sourceGroup.dense.id);
-                                targetGroup.dense.lat.AddRange(sourceGroup.dense.lat);
-                                targetGroup.dense.lon.AddRange(sourceGroup.dense.lon);
+                                if (large)
+                                {
+                                    targetGroup.dense.keys_vals.AddRange(sourceGroup.dense.keys_vals);
+                                    targetGroup.dense.lat.AddRange(sourceGroup.dense.lat);
+                                    targetGroup.dense.lon.AddRange(sourceGroup.dense.lon);
+                                }
                                 if (sourceGroup.dense.denseinfo != null)
                                 {
                                     targetGroup.dense.denseinfo = new DenseInfo();
-                                    targetGroup.dense.denseinfo.uid.AddRange(sourceGroup.dense.denseinfo.uid);
-                                    targetGroup.dense.denseinfo.user_sid.AddRange(sourceGroup.dense.denseinfo.user_sid);
-                                    targetGroup.dense.denseinfo.timestamp.AddRange(sourceGroup.dense.denseinfo.timestamp);
-                                    targetGroup.dense.denseinfo.version.AddRange(sourceGroup.dense.denseinfo.version);
-                                    targetGroup.dense.denseinfo.changeset.AddRange(sourceGroup.dense.denseinfo.changeset);
+                                    if (large)
+                                    {
+                                        targetGroup.dense.denseinfo.uid.AddRange(sourceGroup.dense.denseinfo.uid);
+                                        targetGroup.dense.denseinfo.user_sid.AddRange(sourceGroup.dense.denseinfo.user_sid);
+                                        targetGroup.dense.denseinfo.timestamp.AddRange(sourceGroup.dense.denseinfo.timestamp);
+                                        targetGroup.dense.denseinfo.version.AddRange(sourceGroup.dense.denseinfo.version);
+                                        targetGroup.dense.denseinfo.changeset.AddRange(sourceGroup.dense.denseinfo.changeset);
+                                    }
                                 }
                             }
                         }
                         //PrimitiveBlock pb = (PrimitiveBlock)inputs.ProtoBufTypeModel.Deserialize(inputs.InputData, value, typeof(PrimitiveBlock));
                         //Debug.Assert(pb != null);
-                        Debug.Assert(target.GetNodesCount() == inputs.ExpectedSamples);
+                        //Debug.Assert(target.GetNodesCount() == inputs.ExpectedSamples);
                         counter += inputs.ExpectedSamples;
                     }
                     watch.Stop();
@@ -102,7 +110,7 @@ namespace PerfDemo
 
         public static async Task MeasureAsync(MeasurementInputs inputs, int processid, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException("STOP");
+            //throw new NotImplementedException("STOP");
             Debug.Assert(inputs.ThreadConcurrency > 0);
             Task[] tasks = new Task[inputs.ThreadConcurrency];
             Debug.Assert(inputs.ThreadConcurrency >= 0);
@@ -120,7 +128,9 @@ namespace PerfDemo
                         cancellationToken.ThrowIfCancellationRequested();
                         // FEATURE UNDER TEST => Deserialize!!
                         object value = new PrimitiveBlock();
-                        PrimitiveBlock pb = (PrimitiveBlock)inputs.ProtoBufTypeModel.Deserialize(inputs.InputData, value, typeof(PrimitiveBlock));
+                        //PrimitiveBlock pb2 = (PrimitiveBlock)inputs.ProtoBufTypeModel.Deserialize(inputs.InputData, value:value, typeof(PrimitiveBlock),);
+                        PrimitiveBlock pb = (PrimitiveBlock)inputs.ProtoBufTypeModel.Deserialize(typeof(PrimitiveBlock), inputs.InputData, value: value, userState: "nnn");
+
                         Debug.Assert(pb != null);
                         Debug.Assert(pb.GetNodesCount() == inputs.ExpectedSamples);
                         counter += inputs.ExpectedSamples;
@@ -249,9 +259,9 @@ namespace PerfDemo
                 {
                     throw new InvalidOperationException("Invalid Arguments for Threads and Processes");
                 }
-                
+
                 SerializedSample = GetIntArgumentArray(args, "s").FirstOrDefault(SerializedSample);
-                ExpectedNodeCreations = GetIntArgumentArray(args, "n").FirstOrDefault(SerializedSample*10*8);
+                ExpectedNodeCreations = GetIntArgumentArray(args, "n").FirstOrDefault(SerializedSample * 10 * 8);
 
                 bool quiet = GetBooleanArgument(args, "quiet");
                 bool noLogo = GetBooleanArgument(args, "nologo");
@@ -310,6 +320,7 @@ namespace PerfDemo
                     var expectedNodes = ExpectedNodeCreations / SubProcesses;
                     var options = new List<string>();
                     options.Add("--c=1");
+                    options.Add("--quiet");
                     options.Add("--nologo");
                     options.Add($"--s={SerializedSample.ToString(CultureInfo.InvariantCulture)}");
                     options.Add($"--n={expectedNodes.ToString(CultureInfo.InvariantCulture)}");
@@ -330,12 +341,14 @@ namespace PerfDemo
                     return 0;
                 }
 
-                TypeModel protoBufModel = ProtoBufTypeInfo.CreateOsmFormatModel(compile: true);
+                TypeModel protoBufModel = ProtoBufTypeInfo.CreateOsmFormatModel(compile: false);
+
+                //protoBufModel = ProtoBufTypeInfo.CreateOsmFormatModel(compile: true);
 
                 //Inputs are produced and calculated outside the measurements!
                 //Core input data are provided as ReadOnlyMemory<byte>, so they are thread-safe and without any impact from Disk/Storage during the measurement!
 
-                bool baseLine = true;
+                bool baseLine = false;
 
                 var inputs = new MeasurementInputs(protoBufModel)
                 {

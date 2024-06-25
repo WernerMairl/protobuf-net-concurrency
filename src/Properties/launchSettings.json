@@ -10,7 +10,7 @@
     },
     "Thread": {
       "commandName": "Project",
-      "commandLineArgs": "--c=2 --c=4 --c=8 --s=32000 --n=160000000"
+      "commandLineArgs": "--c=2 --c=4 --c=8 --s=500 --n=1600000"
     },
     "Perf-Debug": {
       "commandName": "Project",
@@ -22,11 +22,11 @@
     },
     "Multi-Processes-8": {
       "commandName": "Project",
-      "commandLineArgs": "--p=10 --s=32000 --quiet=false --nologo=false --n=64000000"
+      "commandLineArgs": "--p=8 --s=32000 --n=64000000"
     },
     "Threads-8": {
       "commandName": "Project",
-      "commandLineArgs": "--c=8 --s=8000 --n=32000000"
+      "commandLineArgs": "--c=8 --s=32000 --n=64000000"
     }
 
   }

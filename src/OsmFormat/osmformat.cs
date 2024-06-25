@@ -400,7 +400,7 @@ namespace PerfDemo.OsmFormat
         /// </summary>
         public DenseInfo() { }
 
-        private readonly global::System.Collections.Generic.List<int> _version = new global::System.Collections.Generic.List<int>();
+        private readonly global::System.Collections.Generic.List<int> _version = new global::System.Collections.Generic.List<int>(defaultCapacity);
         /// <summary>
         /// 
         /// </summary>
@@ -410,7 +410,7 @@ namespace PerfDemo.OsmFormat
             get { return _version; }
         }
 
-        private readonly global::System.Collections.Generic.List<long> _timestamp = new global::System.Collections.Generic.List<long>();
+        private readonly global::System.Collections.Generic.List<long> _timestamp = new global::System.Collections.Generic.List<long>(defaultCapacity);
         /// <summary>
         /// 
         /// </summary>
@@ -420,7 +420,7 @@ namespace PerfDemo.OsmFormat
             get { return _timestamp; }
         }
 
-        private readonly global::System.Collections.Generic.List<long> _changeset = new global::System.Collections.Generic.List<long>();
+        private readonly global::System.Collections.Generic.List<long> _changeset = new global::System.Collections.Generic.List<long>(defaultCapacity);
         /// <summary>
         /// 
         /// </summary>
@@ -430,7 +430,8 @@ namespace PerfDemo.OsmFormat
             get { return _changeset; }
         }
 
-        private readonly global::System.Collections.Generic.List<int> _uid = new global::System.Collections.Generic.List<int>();
+        const int defaultCapacity = 500;
+        private readonly global::System.Collections.Generic.List<int> _uid = new global::System.Collections.Generic.List<int>(defaultCapacity);
         /// <summary>
         /// 
         /// </summary>
@@ -440,7 +441,7 @@ namespace PerfDemo.OsmFormat
             get { return _uid; }
         }
 
-        private readonly global::System.Collections.Generic.List<int> _user_sid = new global::System.Collections.Generic.List<int>();
+        private readonly global::System.Collections.Generic.List<int> _user_sid = new global::System.Collections.Generic.List<int>(defaultCapacity);
         /// <summary>
         /// 
         /// </summary>
@@ -644,9 +645,10 @@ namespace PerfDemo.OsmFormat
         /// <summary>
         /// 
         /// </summary>
-        public DenseNodes() { }
+        public DenseNodes() 
+        { }
 
-        private readonly global::System.Collections.Generic.List<long> _id = new global::System.Collections.Generic.List<long>();
+        private readonly global::System.Collections.Generic.List<long> _id = new global::System.Collections.Generic.List<long>(defaultCapacity);
         /// <summary>
         /// 
         /// </summary>
@@ -668,7 +670,9 @@ namespace PerfDemo.OsmFormat
             get { return _denseinfo; }
             set { _denseinfo = value; }
         }
-        private readonly global::System.Collections.Generic.List<long> _lat = new global::System.Collections.Generic.List<long>();
+        private const int defaultCapacity = 500;
+
+        private readonly global::System.Collections.Generic.List<long> _lat = new global::System.Collections.Generic.List<long>(defaultCapacity);
         /// <summary>
         /// 
         /// </summary>
@@ -678,7 +682,7 @@ namespace PerfDemo.OsmFormat
             get { return _lat; }
         }
 
-        private readonly global::System.Collections.Generic.List<long> _lon = new global::System.Collections.Generic.List<long>();
+        private readonly global::System.Collections.Generic.List<long> _lon = new global::System.Collections.Generic.List<long>(defaultCapacity);
         /// <summary>
         /// 
         /// </summary>
@@ -688,7 +692,7 @@ namespace PerfDemo.OsmFormat
             get { return _lon; }
         }
 
-        private readonly global::System.Collections.Generic.List<int> _keys_vals = new global::System.Collections.Generic.List<int>();
+        private readonly global::System.Collections.Generic.List<int> _keys_vals = new global::System.Collections.Generic.List<int>(defaultCapacity);
         /// <summary>
         /// 
         /// </summary>
