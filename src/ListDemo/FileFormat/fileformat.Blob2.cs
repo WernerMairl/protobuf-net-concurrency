@@ -9,13 +9,71 @@
 
 // Generated from: fileformat.proto
 using ProtoBuf;
+using ProtoBuf.Serializers;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace MSS.Tools.Pbf.IO.FileFormat
 {
-    [ProtoContract(IgnoreListHandling =false)]
+
+
+    //[ProtoContract]
+    //struct BufferSurrogate
+    //{//https://stackoverflow.com/questions/78185352/how-would-i-write-a-custom-protobuf-net-serializer-for-this-particular-class
+    //    public static implicit operator BufferSurrogate(Blob2 value)
+    //        => new BufferSurrogate { };
+    //    public static implicit operator Blob2(BufferSurrogate value)
+    //        => new Blob2 {};
+
+    //    //public object? Value { get; set; }
+
+    //    //[ProtoMember(1)]
+    //    //public int? ValueInt32
+    //    //{
+    //    //    get => Value is int x ? x : default;
+    //    //    set => Value = value;
+    //    //}
+
+    //    //[ProtoMember(2)]
+    //    //public string? ValueString
+    //    //{
+    //    //    get => Value as string;
+    //    //    set => Value = value;
+    //    //}
+
+    //    //[ProtoMember(3)]
+    //    //public Foo? ValueFoo
+    //    //{
+    //    //    get => Value as Foo;
+    //    //    set => Value = value;
+    //    //}
+    //}
+    //public class ByteSerializer : ISerializer<ByteBuffer>
+    //{
+    //    public SerializerFeatures Features => throw new NotImplementedException();
+
+    //    public ByteBuffer Read(ref ProtoReader.State state, ByteBuffer value)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public void Write(ref ProtoWriter.State state, ByteBuffer value)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
+
+    //[ProtoContract(Serializer = typeof(ByteSerializer))]
+    //public class ByteBuffer
+    //{ }
+
+    [ProtoContract(IgnoreListHandling =true)]
+    public class NotAByteList : List<byte>
+    {
+    }
+
+    [ProtoContract(IgnoreListHandling = false)]
     public class ByteList : List<byte>
     {
     }
@@ -52,7 +110,7 @@ namespace MSS.Tools.Pbf.IO.FileFormat
     {
         public void ClearForReUsage()
         {
-            this.zlib_data = null;
+            //this.zlib_data = null;
         }
         /// <summary>
         /// 
@@ -61,18 +119,39 @@ namespace MSS.Tools.Pbf.IO.FileFormat
         {
         }
 
-        private byte[] _zlib_data = null;
+
+        private ArraySegment<byte> _zlib_data = null;
 
         /// <summary>
         /// 
         /// </summary>
         [global::ProtoBuf.ProtoMember(3, IsRequired = false, Name = @"zlib_data", DataFormat = global::ProtoBuf.DataFormat.Default)]
         [global::System.ComponentModel.DefaultValue(null)]
-        public byte[] zlib_data
+        public ArraySegment<byte> zlib_data
         {
             get { return _zlib_data; }
             set { _zlib_data = value; }
         }
+
+        //private byte[] _zlib_data = null;
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[global::ProtoBuf.ProtoMember(3, IsRequired = false, Name = @"zlib_data", DataFormat = global::ProtoBuf.DataFormat.Default)]
+        //[global::System.ComponentModel.DefaultValue(null)]
+        //public byte[] zlib_data
+        //{
+        //    get { return _zlib_data; }
+        //    set { _zlib_data = value; }
+        //}
+
+        //private NotAByteList _Zl = null;
+
+        //[global::ProtoBuf.ProtoMember(3, IsRequired = false, Name = @"zlib_data", DataFormat = global::ProtoBuf.DataFormat.Default)]
+        //[global::System.ComponentModel.DefaultValue(null)]
+        //public NotAByteList ZLib { get; set; }
+
 
         //private ByteList _Zl = null;
 
@@ -80,9 +159,25 @@ namespace MSS.Tools.Pbf.IO.FileFormat
         //[global::System.ComponentModel.DefaultValue(null)]
         //public ByteList ZLib { get; set; }
 
+
+
+
         //[global::ProtoBuf.ProtoMember(3, IsRequired = false, Name = @"zlib_data", DataFormat = global::ProtoBuf.DataFormat.Default)]
         //[global::System.ComponentModel.DefaultValue(null)]
         //public ArraySegment<byte> ZLib { get; set; }
+
+        //private List<sbyte> _zlib_data;
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[global::ProtoBuf.ProtoMember(3, IsRequired = false, Name = @"zlib_data", DataFormat = global::ProtoBuf.DataFormat.Default)]
+        //[global::System.ComponentModel.DefaultValue(null)]
+        //public List<sbyte> zlib_data
+        //{
+        //    get { return _zlib_data; }
+        //    set { _zlib_data = value; }
+        //}
 
 
         private global::ProtoBuf.IExtension extensionObject;

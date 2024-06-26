@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -122,23 +123,41 @@ namespace ListDemo
 
             try
             {
+                bool forceCreation = false;
+                string testDataFile = Path.Combine(Path.GetTempPath(), "ListDemo.pbf");
+                if (forceCreation || !File.Exists(testDataFile))
+                {
+                    var blob = new Blob();
+                    int size = 7000;
+                    var buffer = new byte[size];
+                    for (int i = 0; i < size; i++)
+                    {
+                        byte v = (byte)(i % 256);
+                        buffer[i] = v;
+                    }
+                    blob.zlib_data = buffer;
+                    using (var storage = File.OpenWrite(testDataFile))
+                    {
+                        var written = SerializeBlob(storage, blob);
+                    }
+                }
                 //SerializerCache.Get
                 //RepeatedSerializer.CreateImmutableIList
-                //step1: serialize
-                var blob = new Blob();
-                int size = 7023;
-                var buffer = new byte[size];
-                Random.Shared.NextBytes(buffer);
-                blob.zlib_data = buffer;
-                using (var storage = new MemoryStream())
+                //    //step1: serialize
+                //    var blob = new Blob();
+                //int size = 7023;
+                //var buffer = new byte[size];
+                //Random.Shared.NextBytes(buffer);
+                //blob.zlib_data = buffer;
+                using (var storage = File.OpenRead(testDataFile))
                 {
-                    var written = SerializeBlob(storage, blob);
-                    var blobOriginal = DeSerializeBlob(storage);
-                    Debug.Assert(blobOriginal.zlib_data.Length == blob.zlib_data.Length);
-
-                    var blob2 = DeSerializeBlob2(storage);
-                    Debug.Assert(blob2.zlib_data.Length == blob.zlib_data.Length);
-
+                    //    var written = SerializeBlob(storage, blob);
+                        //var blobOriginal = DeSerializeBlob(storage);
+                       // Debug.Assert(blobOriginal.zlib_data.Length == blob.zlib_data.Length);
+                        var blob2 = DeSerializeBlob2(storage);
+                    ArrayPool<byte>.Shared.Return(blob2.zlib_data.Array);
+                    //    //Debug.Assert(blob2.zlib_data.Length == blob.zlib_data.Length);
+                    //    //Debug.Assert(blob2.zlib_data.Count() == blob.zlib_data.Count());
                 }
                 return 0;
             }

@@ -1,6 +1,7 @@
 ﻿using ProtoBuf.Internal;
 using ProtoBuf.Meta;
 using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -51,10 +52,22 @@ namespace ProtoBuf.Serializers
         IMemoryConverter<Memory<T>, T>,
         IMemoryConverter<ReadOnlyMemory<T>, T>
     {
+        //[MethodImpl(ProtoReader.HotPath)]
+        //internal static IMemoryConverter<TStorage, T> GetFor<TStorage>(TypeModel model)
+        //    => model?.GetSerializerCore<TStorage>(default) as IMemoryConverter<TStorage, T>
+        //    ?? Instance as IMemoryConverter<TStorage, T> ?? NotSupported<TStorage>();
+
+
         [MethodImpl(ProtoReader.HotPath)]
         internal static IMemoryConverter<TStorage, T> GetFor<TStorage>(TypeModel model)
-            => model?.GetSerializerCore<TStorage>(default) as IMemoryConverter<TStorage, T>
-            ?? Instance as IMemoryConverter<TStorage, T> ?? NotSupported<TStorage>();
+        {
+            System.Diagnostics.Debug.WriteLine(typeof(TStorage).FullName);
+            System.Diagnostics.Debug.WriteLine(typeof(T).FullName);
+            var nullable = model?.GetSerializerCore<TStorage>(default) as IMemoryConverter<TStorage, T>;
+            var firstTray = nullable ?? Instance as IMemoryConverter<TStorage, T>;
+            return firstTray ?? NotSupported<TStorage>();
+        }
+
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static IMemoryConverter<TStorage, T> NotSupported<TStorage>()
@@ -96,12 +109,15 @@ namespace ProtoBuf.Serializers
             // we can't expand into the segment, because we don't know what else is using it;
             // so: allocate an entire array
             int oldCount = value.Count;
-            var arr = new T[oldCount + additionalCapacity];
+            //var arr = new T[oldCount + additionalCapacity];
+            var arr = ArrayPool<T>.Shared.Rent(oldCount + additionalCapacity);
             if (oldCount != 0)
             {
                 Array.Copy(value.Array, value.Offset, arr, 0, oldCount);
             }
-            value = new ArraySegment<T>(arr);
+            //value = new ArraySegment<T>(arr);
+            value = new ArraySegment<T>(arr, 0, oldCount + additionalCapacity);
+
             return new Memory<T>(arr, oldCount, additionalCapacity);
         }
 
