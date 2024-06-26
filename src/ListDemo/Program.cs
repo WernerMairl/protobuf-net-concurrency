@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MSS.Tools.Pbf.IO.FileFormat;
 using ProtoBuf.Meta;
+using ProtoBuf.Serializers;
 
 namespace ListDemo
 {
@@ -121,6 +122,8 @@ namespace ListDemo
 
             try
             {
+                //SerializerCache.Get
+                //RepeatedSerializer.CreateImmutableIList
                 //step1: serialize
                 var blob = new Blob();
                 int size = 7023;

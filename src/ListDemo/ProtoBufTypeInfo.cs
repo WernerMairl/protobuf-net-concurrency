@@ -1,3 +1,4 @@
+using MSS.Tools.Pbf.IO.FileFormat;
 using ProtoBuf.Meta;
 namespace ListDemo
 {
@@ -20,6 +21,7 @@ namespace ListDemo
             var rt = RuntimeTypeModel.Create(nameof(CreateFileFormatModel));
             //rt.Add(_blobHeaderType, true).SetFactory(typeof(OsmProtoBufFactory).GetMethod(nameof(OsmProtoBufFactory.CreateFileFormatItems)));
             rt.Add(typeof(global::MSS.Tools.Pbf.IO.FileFormat.Blob2), true); //.SetFactory(typeof(OsmProtoBufFactory).GetMethod(nameof(OsmProtoBufFactory.CreateFileFormatItems)));
+            rt.Add(typeof(ByteList), true);
             if (compile)
             {
                 return rt.Compile();

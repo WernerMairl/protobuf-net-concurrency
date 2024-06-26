@@ -15,12 +15,40 @@ using System.Runtime.Serialization;
 
 namespace MSS.Tools.Pbf.IO.FileFormat
 {
- 
+    [ProtoContract(IgnoreListHandling =false)]
+    public class ByteList : List<byte>
+    {
+    }
+
+    [ProtoContract(IgnoreListHandling = false)]
+    public class ByteList1 : IEnumerable<byte>
+    {
+        //[ProtoMember(1)]
+        public readonly List<byte> data = new List<byte>();
+
+        public IEnumerator<byte> GetEnumerator()
+        {
+            return data.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public bool Add(byte item)
+        {
+            this.data.Add(item);
+            return true;
+        }
+    }
+
+
     /// <summary>
     /// 
     /// </summary>
     [global::ProtoBuf.ProtoContract(Name = @"Blob")]
-    public partial class Blob : global::ProtoBuf.IExtensible
+    public partial class Blob2 : global::ProtoBuf.IExtensible
     {
         public void ClearForReUsage()
         {
@@ -33,7 +61,7 @@ namespace MSS.Tools.Pbf.IO.FileFormat
         /// <summary>
         /// 
         /// </summary>
-        public Blob()
+        public Blob2()
         {
         }
 
@@ -75,6 +103,41 @@ namespace MSS.Tools.Pbf.IO.FileFormat
             set { _zlib_data = value; }
         }
 
+        //private ByteList _Zl = null;
+
+        //[global::ProtoBuf.ProtoMember(3, IsRequired = false, Name = @"zlib_data", DataFormat = global::ProtoBuf.DataFormat.Default)]
+        //[global::System.ComponentModel.DefaultValue(null)]
+        //public ByteList ZLib { get; set; }
+
+        //[global::ProtoBuf.ProtoMember(3, IsRequired = false, Name = @"zlib_data", DataFormat = global::ProtoBuf.DataFormat.Default)]
+        //[global::System.ComponentModel.DefaultValue(null)]
+        //public ArraySegment<byte> ZLib { get; set; }
+
+
+        //public ByteList ZLib
+        //{
+        //    get
+        //    {
+        //        return _Zl;
+        //    }
+        //    set
+        //    {
+        //        value = _Zl;
+        //    }
+        //}
+
+        //[ProtoBeforeDeserialization]
+        //internal void OnDeserializingMethod(StreamingContext context)
+        //{
+        //    //_isDeserializingDerived = true;
+        //}
+
+        //[ProtoAfterDeserialization]
+        //internal void OnDeserializedMethod(StreamingContext context)
+        //{
+
+        //}
+
         //private byte[] _lzma_data = null;
         ///// <summary>
         ///// 
@@ -103,58 +166,6 @@ namespace MSS.Tools.Pbf.IO.FileFormat
         { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    [global::ProtoBuf.ProtoContract(Name = @"BlockHeader")]
-    public partial class BlobHeader : global::ProtoBuf.IExtensible
-    {
-        public void ClearForReUsage()
-        {
-            this._type = null;
-            this._indexdata = null;
-            this._datasize = 0;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public BlobHeader() { }
 
-        private string _type;
-        /// <summary>
-        /// 
-        /// </summary>
-        [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name = @"type", DataFormat = global::ProtoBuf.DataFormat.Default)]
-        public string type
-        {
-            get { return _type; }
-            set { _type = value; }
-        }
-
-        private byte[] _indexdata = null;
-        /// <summary>
-        /// 
-        /// </summary>
-        [global::ProtoBuf.ProtoMember(2, IsRequired = false, Name = @"indexdata", DataFormat = global::ProtoBuf.DataFormat.Default)]
-        [global::System.ComponentModel.DefaultValue(null)]
-        public byte[] indexdata
-        {
-            get { return _indexdata; }
-            set { _indexdata = value; }
-        }
-        private int _datasize;
-        /// <summary>
-        /// 
-        /// </summary>
-        [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name = @"datasize", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
-        public int datasize
-        {
-            get { return _datasize; }
-            set { _datasize = value; }
-        }
-        private global::ProtoBuf.IExtension extensionObject;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-        { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
-    }
 
 }
