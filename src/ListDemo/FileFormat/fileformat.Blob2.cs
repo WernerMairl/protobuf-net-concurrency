@@ -52,10 +52,6 @@ namespace MSS.Tools.Pbf.IO.FileFormat
     {
         public void ClearForReUsage()
         {
-            //this._raw_size = 0;
-            //this._raw = null;
-            //this.lzma_data = null;
-            //this._bzip2_data = null;
             this.zlib_data = null;
         }
         /// <summary>
@@ -64,31 +60,6 @@ namespace MSS.Tools.Pbf.IO.FileFormat
         public Blob2()
         {
         }
-
-
-        //private byte[] _raw = null;
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //[global::ProtoBuf.ProtoMember(1, IsRequired = false, Name = @"raw", DataFormat = global::ProtoBuf.DataFormat.Default)]
-        //[global::System.ComponentModel.DefaultValue(null)]
-        //public byte[] raw
-        //{
-        //    get { return _raw; }
-        //    set { _raw = value; }
-        //}
-
-        //private int _raw_size = default(int);
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //[global::ProtoBuf.ProtoMember(2, IsRequired = false, Name = @"raw_size", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
-        //[global::System.ComponentModel.DefaultValue(default(int))]
-        //public int raw_size
-        //{
-        //    get { return _raw_size; }
-        //    set { _raw_size = value; }
-        //}
 
         private byte[] _zlib_data = null;
 
@@ -114,58 +85,9 @@ namespace MSS.Tools.Pbf.IO.FileFormat
         //public ArraySegment<byte> ZLib { get; set; }
 
 
-        //public ByteList ZLib
-        //{
-        //    get
-        //    {
-        //        return _Zl;
-        //    }
-        //    set
-        //    {
-        //        value = _Zl;
-        //    }
-        //}
-
-        //[ProtoBeforeDeserialization]
-        //internal void OnDeserializingMethod(StreamingContext context)
-        //{
-        //    //_isDeserializingDerived = true;
-        //}
-
-        //[ProtoAfterDeserialization]
-        //internal void OnDeserializedMethod(StreamingContext context)
-        //{
-
-        //}
-
-        //private byte[] _lzma_data = null;
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //[global::ProtoBuf.ProtoMember(4, IsRequired = false, Name = @"lzma_data", DataFormat = global::ProtoBuf.DataFormat.Default)]
-        //[global::System.ComponentModel.DefaultValue(null)]
-        //public byte[] lzma_data
-        //{
-        //    get { return _lzma_data; }
-        //    set { _lzma_data = value; }
-        //}
-
-        //private byte[] _bzip2_data = null;
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //[global::ProtoBuf.ProtoMember(5, IsRequired = false, Name = @"bzip2_data", DataFormat = global::ProtoBuf.DataFormat.Default)]
-        //[global::System.ComponentModel.DefaultValue(null)]
-        //public byte[] bzip2_data
-        //{
-        //    get { return _bzip2_data; }
-        //    set { _bzip2_data = value; }
-        //}
         private global::ProtoBuf.IExtension extensionObject;
         global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
         { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
     }
-
-
 
 }
